@@ -1,0 +1,14 @@
+---
+- name: Download docker-compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    dest: "{{ docker_compose_path }}"
+    mode: 'u+x'
+
+- name: Test installation
+  command: "{{ docker_compose_path }} --version"
+  register: result
+
+- name: Show docker-compose version
+  debug:
+    msg: "{{ result.stdout }}"

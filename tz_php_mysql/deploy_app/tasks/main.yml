@@ -1,0 +1,50 @@
+---
+- name: Ensure the PHP Dockerfile directory exists
+  file:
+    path: /home/ubuntu/app/php-docker
+    state: directory
+
+- name: Copy PHP Dockerfile to remote
+  copy:
+    src: php-docker/Dockerfile
+    dest: /home/ubuntu/app/php-docker/Dockerfile
+
+
+- name: Ensure the application directory exists
+  ansible.builtin.file:
+    path: /home/ubuntu/app
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Ensure the HTML directory exists
+  ansible.builtin.file:
+    path: /home/ubuntu/app/html
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Copy docker-compose.yml to remote
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: /home/ubuntu/app/docker-compose.yml
+
+- name: Copy Nginx site configuration to remote
+  template:
+    src: templates/site.conf.j2
+    dest: /home/ubuntu/app/site.conf
+
+- name: Copy index.php to remote
+  copy:
+    src: index.php
+    dest: /home/ubuntu/app/html/index.php
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+
+- name: Deploy and start the application using docker-compose
+  command: docker-compose up -d
+  args:
+    chdir: /home/ubuntu/app/
